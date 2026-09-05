@@ -1,6 +1,10 @@
 # guided-pr-review
 
-A guided, component-by-component peer review process for AI coding assistants — built to replace file-by-file diff review with something that actually helps a reviewer understand *and* argue about a PR.
+A guided, component-by-component peer-review **facilitator** for AI coding assistants — it walks a human reviewer through a PR one piece at a time; it does not review the PR *for* them.
+
+## Facilitator, not reviewer
+
+This doesn't approve or reject anything, and it never renders a verdict — every decision in the summary table is the human's, not the process's. Its job is making sure a human reviewer sees the right things, in the right order, at the right depth, and never has to re-litigate settled ground — not replacing the judgment call itself. It never edits code on its own either: a change only happens when the human explicitly directs it for a specific finding (see [`principles.md`](.apm/skills/guided-pr-review/principles.md), "Directed edits only, never unilateral ones").
 
 ## The problem
 
@@ -8,7 +12,7 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 
 ## What this does instead
 
-- **Anchors on the PR**, not on a spec — every PR gets reviewed the same way.
+- **Anchors on the PR**, not on a spec — every PR gets walked through the same way.
 - **Uses spec/plan context when it exists** (e.g. from SpecKit) to check implementation against stated intent — this is the actual differentiator over a generic AI reviewer. When no spec is found, it falls back to structural + risk-based review from the diff and codebase alone.
 - **Gives a structural overview first** — what changed, how components connect, the data flow through the change — before touching any code.
 - **Walks through components one at a time**, in call/dependency order, linking directly to the relevant file and line, and pointing out specifically what to look at and why.
