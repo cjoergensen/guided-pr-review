@@ -21,6 +21,31 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 - **Resumes from where it left off** — after you push a fix, it re-checks only what changed and carries forward everything already resolved, rather than restarting the review.
 - **Same output shape every time** — a fixed template (see [`output-template.md`](.apm/skills/guided-pr-review/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
 
+## Grounded in research
+
+Most of the design choices above trace back to a specific finding, not a hunch. Grouped by what they justify:
+
+**Review methodology**
+- **Fagan's original 1976 code inspection method** — the origin of structured, complete-record review (vs. ad hoc reading). Justifies the fixed output template, the rule that a "no concerns" component still gets a row in the summary table, and the severity/decision taxonomies.
+- **Rigby & Bird, *Convergent Contemporary Software Peer Review Practices* (2013)** — async, tool-mediated review achieves comparable defect detection to Fagan's heavyweight inspection meetings, at a fraction of the overhead. Justifies running as a chat-based, resumable process rather than a synchronous review meeting.
+- **Sadowski et al., *Modern Code Review: A Case Study at Google* (ICSE SEIP 2018)** — not understanding a change's purpose before reading it is the top-cited source of review friction. Justifies the Structural Overview and comparing the diff against the PR's stated intent even without a formal spec.
+- **Bacchelli & Bird, *Expectations, Outcomes, and Challenges of Modern Code Review* (ICSE 2013, Microsoft)** — verifying intent and knowledge-sharing are reported ahead of pure defect-hunting as reasons people review at all. Justifies capturing the decision *and* the reasoning, not just a verdict.
+- **Cohen et al. / the SmartBear–Cisco *Best Kept Secrets of Peer Code Review* study** — reviewer defect-detection drops off sharply past a sustainable session size. Justifies the pacing threshold and one-component-at-a-time presentation.
+- **MacLeod et al., *Code Reviewing in the Trenches* (IEEE Software 2018)** — "finding the code being discussed" is a recurring tooling complaint. Justifies deep-linking every component to its exact file and line.
+- **Egelman et al., *Predicting Developers' Negative Feelings about Code Review* (ICSE 2020)** — nitpick volume and tone correlate with reviewer/author fatigue and disengagement. Justifies biasing toward fewer, sharper discussion points and treating "no concerns" as a valid, expected outcome.
+- **Review-iteration studies on real Gerrit/Chromium data** — each additional full re-review round measurably adds latency and fatigue. Justifies delta-only, resumable re-review that never re-litigates settled components.
+- **Potts & Bruns, design rationale research (1988)** — undocumented decisions get re-litigated by people who weren't there the first time. Justifies recording *why*, including the reviewer's own pushback, alongside every decision.
+
+**Cognitive science of presentation**
+- **Paivio's dual-coding theory** — information encoded both verbally and visually integrates into stronger comprehension than either alone. Justifies the optional Mermaid diagram alongside (never instead of) the prose Data Flow list.
+- **Vessey's Cognitive Fit Theory (1991)** — a representation works best when its structure matches the task's structure; flow and dependency relationships are inherently spatial/directional. Justifies drawing a diagram specifically for flow and component relationships rather than forcing them into a flat list.
+- **Pennington; von Mayrhauser & Vans, program comprehension research** — building a "what does this do" model before a "how does it do it" model produces more accurate mental models. Justifies the structural overview before any line-level detail, and walking components in call/dependency order rather than diff or alphabetical order.
+
+**Document and interface design**
+- **Nielsen's "Consistency and Standards" usability heuristic (1994)** and **the "jingle-jangle fallacy" (Kelley, 1927)** — using different words for the same concept forces readers to reconcile them as separate things. Justifies unifying what were once three different names ("Question," "Finding," "point") into one canonical term, "discussion point," everywhere.
+- **Hartley's structured-abstracts research** — a fixed, labeled format is read faster and recalled better than equivalent free-form prose, but only if the same label reliably means the same thing everywhere. Justifies both the fixed template itself and the terminology consolidation above.
+- **Alarm-fatigue research (clinical and security alerting literature)** — a warning shown regardless of whether it's warranted trains people to ignore it. Justifies the pacing flag appearing only when the component count actually crosses the threshold, never by default.
+
 ## Examples
 
 - [`examples/refactor-session.md`](examples/refactor-session.md) — a one-component pure refactor (a rename plus an extracted helper, no behavior change) with nothing to flag. Shows the process doesn't manufacture a discussion point just to have something to say.
