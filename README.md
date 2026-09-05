@@ -21,6 +21,12 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 - **Resumes from where it left off** — after you push a fix, it re-checks only what changed and carries forward everything already resolved, rather than restarting the review.
 - **Same output shape every time** — a fixed template (see [`output-template.md`](.apm/skills/guided-pr-review/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
 
+## Examples
+
+- [`examples/refactor-session.md`](examples/refactor-session.md) — a one-component pure refactor (a rename plus an extracted helper, no behavior change) with nothing to flag. Shows the process doesn't manufacture a question just to have something to say.
+- [`examples/rate-limiter-session.md`](examples/rate-limiter-session.md) — a small, two-component PR: a token-bucket rate limiter plus the middleware wiring it into request handling. One question resolves with no code change; the other surfaces a real concurrency bug and gets fixed inline via a directed edit.
+- [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, plus the "add details" branch of the closing post-to-PR flow.
+
 ## Status
 
 Early work in progress. Core process is designed and packaged as an [APM](https://microsoft.github.io/apm/) skill; Copilot and Claude Code deploys are validated, Cursor is next.
@@ -43,7 +49,9 @@ apm.yml                              # package manifest — name, version, targe
     └── review-pr.prompt.md          # Copilot-native `/review-pr` slash command
 
 examples/                            # worked example sessions, for reference
-└── rate-limiter-session.md
+├── refactor-session.md              # simplest case: nothing to flag
+├── rate-limiter-session.md          # small case: one bug, one non-issue
+└── checkout-pipeline-session.md     # larger case: diagram, full state coverage
 ```
 
 `SKILL.md`, `process.md`, `output-template.md`, and `principles.md` are the single source of truth — nothing duplicates them elsewhere. `apm install` hoists the `skills` and `prompts` primitives into whichever native location each target expects (`.agents/skills/guided-pr-review/` for Copilot and most other targets, `.claude/skills/` for Claude Code, `.github/prompts/` for Copilot's `/review-pr` command) — there's no hand-written per-tool adapter to keep in sync.
