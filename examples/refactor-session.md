@@ -2,15 +2,15 @@
 
 A one-component PR — a method rename plus extracting a helper, no behavior change. Shown to contrast with [`rate-limiter-session.md`](rate-limiter-session.md): not every PR has a discussion point, and the process doesn't manufacture one to have something to say.
 
-Below is genuine rendered markdown, not a code block — this is what the process actually outputs, turn by turn, in a real session. Reviewer turns are quoted; everything else is the process's own output, following [`output-template.md`](../.apm/skills/guided-pr-review/output-template.md).
+Below is genuine rendered markdown, not a code block — this is what the process actually outputs, turn by turn, in a real session. Reviewer turns are quoted and marked with 💬 so they stand out from the process's own bold-heavy formatting; everything else is the process's own output, following [`output-template.md`](../.apm/skills/guided-pr-review/output-template.md).
 
 ---
 
 ## PR Review — Rename CalcTotal to CalculateOrderTotal, extract tax calculation
 
-**Branch:** refactor/order-total-naming → **Base:** main
-**Stated intent:** "Cleanup: rename for clarity and extract the tax math into its own method. No behavior change."
-**Spec match:** None found — reviewing from diff only
+**Branch:** refactor/order-total-naming → **Base:** main\
+**Stated intent:** "Cleanup: rename for clarity and extract the tax math into its own method. No behavior change."\
+**Spec match:** None found — reviewing from diff only\
 **Files changed:** 1 | **Lines:** +14 / -8
 
 ### Structural Overview
@@ -30,7 +30,7 @@ Walking through the component now.
 
 ---
 
-> **Reviewer:** jsmith — skip posting, this one's trivial.
+> 💬 **Reviewer:** jsmith — skip posting, this one's trivial.
 
 ---
 
@@ -43,6 +43,7 @@ Walking through the component now.
 **Open discussions:** 0 | **Follow-ups filed:** 0
 
 The table above is the exact preview of what would post to the PR (plus a "Reviewed by:" line).
+
 Who conducted this review (name or handle)? And: post as-is, add details first, or skip posting?
 
 ---

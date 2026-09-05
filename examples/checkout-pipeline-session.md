@@ -2,15 +2,15 @@
 
 A larger, six-component PR — a full checkout flow from HTTP entry point through inventory reservation, pricing, persistence, and event publishing. The branching data flow is genuinely hard to follow as prose, so this is the case where the optional Mermaid diagram earns its place (see [`principles.md`](../.apm/skills/guided-pr-review/principles.md), "Diagram when it fits, never invent one"). No spec/plan folder for this one either.
 
-Below is genuine rendered markdown, not a code block — this is what the process actually outputs, turn by turn, in a real session. That matters most here: the Mermaid block below is a real, top-level fence (not nested inside anything), so it renders as an actual diagram wherever this file is viewed, exactly as it would in a live session. Reviewer turns are quoted; everything else is the process's own output, following [`output-template.md`](../.apm/skills/guided-pr-review/output-template.md).
+Below is genuine rendered markdown, not a code block — this is what the process actually outputs, turn by turn, in a real session. That matters most here: the Mermaid block below is a real, top-level fence (not nested inside anything), so it renders as an actual diagram wherever this file is viewed, exactly as it would in a live session. Reviewer turns are quoted and marked with 💬 so they stand out from the process's own bold-heavy formatting; everything else is the process's own output, following [`output-template.md`](../.apm/skills/guided-pr-review/output-template.md).
 
 ---
 
 ## PR Review — Add checkout pipeline (validate, reserve, price, persist, publish)
 
-**Branch:** feature/checkout-pipeline → **Base:** main
-**Stated intent:** "Implements the checkout pipeline: validate cart, reserve inventory, price the order, persist, publish OrderPlaced."
-**Spec match:** None found — reviewing from diff only
+**Branch:** feature/checkout-pipeline → **Base:** main\
+**Stated intent:** "Implements the checkout pipeline: validate cart, reserve inventory, price the order, persist, publish OrderPlaced."\
+**Spec match:** None found — reviewing from diff only\
 **Files changed:** 6 | **Lines:** +340 / -12
 
 ### Structural Overview
@@ -47,18 +47,18 @@ Walking through each component now.
 
 📄 `src/Api/Controllers/CheckoutController.cs:18`
 
-**Role:** HTTP entry point; deserializes the cart and kicks off the pipeline.
+**Role:** HTTP entry point; deserializes the cart and kicks off the pipeline.\
 **Risk:** _new public API surface_
 
 **Look for:**
 - line 22: no idempotency key on the request — a client retry after a timeout could submit the same cart twice
 
-**Discussion:** should this endpoint require an idempotency key to prevent a duplicate checkout on client retry?
+**Discussion:** should this endpoint require an idempotency key to prevent a duplicate checkout on client retry?\
 **Severity:** 🟡 Significant
 
 ---
 
-> **Reviewer:** Good catch, but that's a bigger change than this PR should carry — let's track it separately. Filed IDEMPOTENCY-142.
+> 💬 **Reviewer:** Good catch, but that's a bigger change than this PR should carry — let's track it separately. Filed IDEMPOTENCY-142.
 
 ---
 
@@ -70,18 +70,18 @@ Walking through each component now.
 
 📄 `src/Inventory/InventoryReservationService.cs:30`
 
-**Role:** Reserves stock for each line item; the branch point that decides reserved vs. out-of-stock.
+**Role:** Reserves stock for each line item; the branch point that decides reserved vs. out-of-stock.\
 **Risk:** _concurrency-sensitive, shared state_
 
 **Look for:**
 - line 34: reads current stock, then writes stock - quantity as two separate steps — not atomic
 
-**Discussion:** under concurrent checkouts for the same SKU, can two requests both read stock before either decrements it, over-reserving?
+**Discussion:** under concurrent checkouts for the same SKU, can two requests both read stock before either decrements it, over-reserving?\
 **Severity:** 🔴 Blocking
 
 ---
 
-> **Reviewer:** Yes, that's a real race. Change it to a single atomic update — `UPDATE Inventory SET Stock = Stock - @qty WHERE Sku = @sku AND Stock >= @qty`, check rows-affected for the out-of-stock branch.
+> 💬 **Reviewer:** Yes, that's a real race. Change it to a single atomic update — `UPDATE Inventory SET Stock = Stock - @qty WHERE Sku = @sku AND Stock >= @qty`, check rows-affected for the out-of-stock branch.
 
 ---
 
@@ -93,19 +93,19 @@ Walking through each component now.
 
 📄 `src/Pricing/PricingService.cs:40`
 
-**Role:** Computes the order total from reserved line items, applying discounts before tax.
+**Role:** Computes the order total from reserved line items, applying discounts before tax.\
 **Risk:** _touches money_
 
 **Look for:**
 - line 44: discounts applied before tax — correct order
 - line 48: `Math.Round(total, 2)` — no explicit `MidpointRounding`
 
-**Discussion:** should the rounding mode be explicit, given this is a financial total?
+**Discussion:** should the rounding mode be explicit, given this is a financial total?\
 **Severity:** ⚪ Minor
 
 ---
 
-> **Reviewer:** Yeah, let's be explicit rather than rely on the default.
+> 💬 **Reviewer:** Yeah, let's be explicit rather than rely on the default.
 
 ---
 
@@ -117,7 +117,7 @@ Walking through each component now.
 
 📄 `src/Data/OrderRepository.cs:25`
 
-**Role:** Persists the order and its inventory reservation together.
+**Role:** Persists the order and its inventory reservation together.\
 **Risk:** _data integrity_
 
 **Look for:**
@@ -145,11 +145,12 @@ Walking through each component now.
 **Open discussions:** 1 | **Follow-ups filed:** 1
 
 The table above is the exact preview of what would post to the PR (plus a "Reviewed by:" line).
+
 Who conducted this review (name or handle)? And: post as-is, add details first, or skip posting?
 
 ---
 
-> **Reviewer:** jsmith — add details: "Idempotency (IDEMPOTENCY-142) is tracked separately and will land before this ships to prod."
+> 💬 **Reviewer:** jsmith — add details: "Idempotency (IDEMPOTENCY-142) is tracked separately and will land before this ships to prod."
 
 ---
 
@@ -167,10 +168,10 @@ Who conducted this review (name or handle)? And: post as-is, add details first, 
 | OrderPlacedEventPublisher | — | — | Approved | Publish failure doesn't roll back the order, by design |
 
 **Open discussions:** 1 | **Follow-ups filed:** 1
+
 **Reviewed by:** jsmith
 
-**Additional notes:**
-Idempotency (IDEMPOTENCY-142) is tracked separately and will land before this ships to prod.
+**Additional notes:** Idempotency (IDEMPOTENCY-142) is tracked separately and will land before this ships to prod.
 
 ---
 
