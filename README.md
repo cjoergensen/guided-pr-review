@@ -16,15 +16,15 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 - **Uses spec/plan context when it exists** (e.g. from SpecKit) to check implementation against stated intent — this is the actual differentiator over a generic AI reviewer. When no spec is found, it falls back to structural + risk-based review from the diff and codebase alone.
 - **Gives a structural overview first** — what changed, how components connect, the data flow through the change — before touching any code.
 - **Walks through components one at a time**, in call/dependency order, linking directly to the relevant file and line, and pointing out specifically what to look at and why.
-- **Asks, rather than dictates** — surfaces its read on a design choice and a specific question, then waits. Pushback changes its assessment; it doesn't argue past you.
+- **Asks, rather than dictates** — surfaces its read on a design choice as a specific discussion point, then waits. Pushback changes its assessment; it doesn't argue past you.
 - **Captures the decision and the reasoning**, not just a verdict, so "why we built it this way" survives past the conversation.
 - **Resumes from where it left off** — after you push a fix, it re-checks only what changed and carries forward everything already resolved, rather than restarting the review.
 - **Same output shape every time** — a fixed template (see [`output-template.md`](.apm/skills/guided-pr-review/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
 
 ## Examples
 
-- [`examples/refactor-session.md`](examples/refactor-session.md) — a one-component pure refactor (a rename plus an extracted helper, no behavior change) with nothing to flag. Shows the process doesn't manufacture a question just to have something to say.
-- [`examples/rate-limiter-session.md`](examples/rate-limiter-session.md) — a small, two-component PR: a token-bucket rate limiter plus the middleware wiring it into request handling. One question resolves with no code change; the other surfaces a real concurrency bug and gets fixed inline via a directed edit.
+- [`examples/refactor-session.md`](examples/refactor-session.md) — a one-component pure refactor (a rename plus an extracted helper, no behavior change) with nothing to flag. Shows the process doesn't manufacture a discussion point just to have something to say.
+- [`examples/rate-limiter-session.md`](examples/rate-limiter-session.md) — a small, two-component PR: a token-bucket rate limiter plus the middleware wiring it into request handling. One discussion point resolves with no code change; the other surfaces a real concurrency bug and gets fixed inline via a directed edit.
 - [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, plus the "add details" branch of the closing post-to-PR flow.
 
 ## Status

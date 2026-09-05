@@ -5,13 +5,13 @@ description: >-
   request (or the current branch, if no PR exists yet). It gives a structural
   overview first, then walks through each changed component one at a time in
   call/dependency order, linking directly to the relevant file and line and
-  asking a specific question only when something genuinely warrants a
-  decision. It checks for spec/plan context (e.g. from SpecKit) and compares
-  implementation against it when found, falling back to structural and
-  risk-based review otherwise. It can apply a code change, but only when the
-  reviewer explicitly directs one for a specific finding. Activate when asked
-  to review a PR, review this branch, or walk through a diff
-  component-by-component.
+  raising a specific discussion point only when something genuinely warrants
+  a decision. It checks for spec/plan context (e.g. from SpecKit) and
+  compares implementation against it when found, falling back to structural
+  and risk-based review otherwise. It can apply a code change, but only when
+  the reviewer explicitly directs one for a specific discussion point.
+  Activate when asked to review a PR, review this branch, or walk through a
+  diff component-by-component.
 ---
 
 # Guided PR Review
