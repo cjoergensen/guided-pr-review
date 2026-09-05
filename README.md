@@ -78,6 +78,7 @@ The `prompts` primitive has no Claude equivalent, so `apm install` converts it a
 - [x] Validate the Copilot skill + prompt deploy end-to-end
 - [x] Validate the Claude Code skill + command deploy end-to-end
 - [ ] Add `cursor` to `targets:` in `apm.yml` once verified on Cursor
+- [ ] Optional [`.tour`](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) export at Phase 6, alongside post-as-is/add-details/skip — one step per component (file, line, description built from Role/Risk/Look for/Discussion), gated on VS Code as the runtime and only on explicit request, same as posting a PR comment
 
 ## License
 
