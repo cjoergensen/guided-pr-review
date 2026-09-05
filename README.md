@@ -20,7 +20,7 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 - **Captures the decision and the reasoning**, not just a verdict, so "why we built it this way" survives past the conversation.
 - **Resumes from where it left off** — after you push a fix, it re-checks only what changed and carries forward everything already resolved, rather than restarting the review.
 - **Same output shape every time** — a fixed template (see [`output-template.md`](.apm/skills/guided-pr-review/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
-- **Can export the walkthrough as a [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) `.tour` file** on VS Code — one step per component, so a teammate who wasn't in the session can click through the real code, not just read a transcript. Always opt-in, always a separate choice from posting to the PR.
+- **Can build [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) `.tour` files as it goes**, on VS Code — asked once, up front. Each component gets its own single-step tour, written and linked the moment it's presented, so you can look at the actual code before weighing in, not after. Once the walkthrough ends, those get assembled into one whole-PR tour for browsing the finished review in order — or, if you skipped the up-front ask, a one-shot version of that same whole-PR tour is still offered at the end. Either way, always opt-in, always separate from posting to the PR.
 
 ## Grounded in research
 
@@ -51,7 +51,8 @@ Most of the design choices above trace back to a specific finding, not a hunch. 
 
 - [`examples/refactor-session.md`](examples/refactor-session.md) — a one-component pure refactor (a rename plus an extracted helper, no behavior change) with nothing to flag. Shows the process doesn't manufacture a discussion point just to have something to say.
 - [`examples/rate-limiter-session.md`](examples/rate-limiter-session.md) — a small, two-component PR: a token-bucket rate limiter plus the middleware wiring it into request handling. One discussion point resolves with no code change; the other surfaces a real concurrency bug and gets fixed inline via a directed edit.
-- [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, the "add details" branch of the closing post-to-PR flow, and a `.tour` export ([`checkout-pipeline.tour`](examples/checkout-pipeline.tour) is the actual generated file).
+- [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, the "add details" branch of the closing post-to-PR flow, and the Phase-6 fallback `.tour` export ([`checkout-pipeline.tour`](examples/checkout-pipeline.tour) is the actual generated file).
+- [`examples/live-tour-session.md`](examples/live-tour-session.md) — a small, two-component PR where the reviewer opts into live tours up front instead. Each component gets its own single-step `.tour` file the moment it's presented ([`live-tour-session-1-productcachedecorator.tour`](examples/live-tour-session-1-productcachedecorator.tour), [`live-tour-session-2-cacheinvalidationhandler.tour`](examples/live-tour-session-2-cacheinvalidationhandler.tour)), then both get assembled into one whole-PR tour at the end ([`live-tour-session.tour`](examples/live-tour-session.tour)) — two tours doing two different jobs.
 
 ## Status
 
@@ -78,7 +79,11 @@ examples/                            # worked example sessions, for reference
 ├── refactor-session.md              # simplest case: nothing to flag
 ├── rate-limiter-session.md          # small case: one bug, one non-issue
 ├── checkout-pipeline-session.md     # larger case: diagram, full state coverage
-└── checkout-pipeline.tour           # the .tour file that session generates
+├── checkout-pipeline.tour           # its Phase-6 fallback whole-PR .tour
+├── live-tour-session.md             # live tours: per-component, then assembled
+├── live-tour-session-1-*.tour       # component 1's own single-step tour
+├── live-tour-session-2-*.tour       # component 2's own single-step tour
+└── live-tour-session.tour           # both assembled into one whole-PR tour
 ```
 
 `SKILL.md`, `process.md`, `output-template.md`, and `principles.md` are the single source of truth — nothing duplicates them elsewhere. `apm install` hoists the `skills` and `prompts` primitives into whichever native location each target expects (`.agents/skills/guided-pr-review/` for Copilot and most other targets, `.claude/skills/` for Claude Code, `.github/prompts/` for Copilot's `/review-pr` command) — there's no hand-written per-tool adapter to keep in sync.
@@ -105,7 +110,7 @@ The `prompts` primitive has no Claude equivalent, so `apm install` converts it a
 - [x] Validate the Copilot skill + prompt deploy end-to-end
 - [x] Validate the Claude Code skill + command deploy end-to-end
 - [ ] Add `cursor` to `targets:` in `apm.yml` once verified on Cursor
-- [x] Optional `.tour` export at Phase 6 — see `process.md` Phase 6, `principles.md` "Offer a .tour export where it fits, never assume it", and [`checkout-pipeline.tour`](examples/checkout-pipeline.tour) for the worked example
+- [x] Optional `.tour` export, two tours for two jobs — one single-step tour per component, written live as each is presented (so the reviewer can view the code before weighing in), assembled at the end into one whole-PR tour for sequential browsing; a Phase-6 one-shot fallback covers reviewers who skipped the up-front ask ([`checkout-pipeline.tour`](examples/checkout-pipeline.tour), [`live-tour-session.md`](examples/live-tour-session.md)) — see `process.md` and `principles.md`, "Offer a .tour export where it fits, never assume it"
 - [ ] Validate the `.tour` export against the real CodeTour extension in VS Code — so far it's spec-and-example only, not runtime-verified the way the Copilot/Claude deploys were with the real `apm` CLI
 
 ## License

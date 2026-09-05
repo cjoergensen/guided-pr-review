@@ -1,0 +1,11 @@
+{
+  "title": "1/2: ProductCacheDecorator",
+  "description": "Written the moment this component was presented in the walkthrough, before the discussion point below was resolved — see live-tour-session.md.",
+  "steps": [
+    {
+      "file": "src/Caching/ProductCacheDecorator.cs",
+      "line": 14,
+      "description": "**Role:** Sits in front of ProductRepository; returns the cached value on a hit, otherwise reads through and caches the result.\n**Risk:** new caching layer, correctness-sensitive\n\n**Look for:** cache entries have no expiration — eviction relies entirely on CacheInvalidationHandler firing.\n\n**Discussion:** if an invalidation event is ever missed, does anything else bound how stale a cached entry can get? (🟡 Significant)"
+    }
+  ]
+}

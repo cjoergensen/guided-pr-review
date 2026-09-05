@@ -1,0 +1,11 @@
+{
+  "title": "2/2: CacheInvalidationHandler",
+  "description": "Written the moment this component was presented in the walkthrough, before the discussion point below was resolved — see live-tour-session.md.",
+  "steps": [
+    {
+      "file": "src/Caching/CacheInvalidationHandler.cs",
+      "line": 9,
+      "description": "**Role:** Handles ProductUpdated; evicts that product's entry from the cache.\n**Risk:** concurrency-sensitive, cache correctness\n\n**Look for:** eviction happens inside the same handler that processes the update event, with no ordering guarantee relative to the DB transaction that produced it.\n\n**Discussion:** is eviction guaranteed to happen after the update transaction commits, or could a reader hit the cache and get the old value in between? (🔴 Blocking)"
+    }
+  ]
+}

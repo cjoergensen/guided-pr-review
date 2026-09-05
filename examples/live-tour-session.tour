@@ -1,0 +1,18 @@
+{
+  "title": "Add caching to product lookup endpoint",
+  "description": "Assembled at Phase 6 from the two per-component tours already built during the live walkthrough, now with each discussion point's resolution included — see live-tour-session.md, live-tour-session-1-productcachedecorator.tour, and live-tour-session-2-cacheinvalidationhandler.tour.",
+  "steps": [
+    {
+      "title": "1/2: ProductCacheDecorator",
+      "file": "src/Caching/ProductCacheDecorator.cs",
+      "line": 14,
+      "description": "**Role:** Sits in front of ProductRepository; returns the cached value on a hit, otherwise reads through and caches the result.\n**Risk:** new caching layer, correctness-sensitive\n\n**Discussion:** if an invalidation event is ever missed, does anything else bound how stale a cached entry can get? (🟡 Significant)\n\n**Outcome:** Applied — added a 5-minute absolute expiration alongside the existing event-based eviction. Commit `f7a1b2c`."
+    },
+    {
+      "title": "2/2: CacheInvalidationHandler",
+      "file": "src/Caching/CacheInvalidationHandler.cs",
+      "line": 9,
+      "description": "**Role:** Handles ProductUpdated; evicts that product's entry from the cache.\n**Risk:** concurrency-sensitive, cache correctness\n\n**Discussion:** is eviction guaranteed to happen after the update transaction commits, or could a reader hit the cache and get the old value in between? (🔴 Blocking)\n\n**Outcome:** Applied — moved ProductUpdated publishing to a post-commit outbox dispatcher, so invalidation can never race ahead of the write it's supposed to invalidate. Commit `f7a1b2c`."
+    }
+  ]
+}

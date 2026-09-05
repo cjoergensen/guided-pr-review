@@ -48,7 +48,16 @@ Posting the summary to the PR is the same kind of action as a directed edit: it 
 
 ## Offer a .tour export where it fits, never assume it
 
-Phase 3's ordered, file-linked component list maps almost directly onto a [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) `.tour` file's step sequence, so exporting one is a natural by-product of the walkthrough — but it only works where the runtime is VS Code (or a fork) with the CodeTour extension, and it's a *generated artifact*, not a replacement for the interactive walkthrough itself: a tour's steps are static and can't raise a discussion point and wait for an answer, the way the live session does. Offer it as its own explicit yes/no at Phase 6, separate from the PR-posting choice, and only when the runtime is VS Code — never on a runtime that can't use it. Writing it to the repo requires the reviewer's explicit go-ahead, the same consent pattern as posting a PR comment or applying a directed edit; never generate one silently.
+Phase 3's ordered, file-linked component list maps almost directly onto a [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) `.tour` file's step sequence, so building one is a natural by-product of the walkthrough — but it only works where the runtime is VS Code (or a fork) with the CodeTour extension, and it's a *generated artifact*, not a replacement for the interactive walkthrough itself: a tour's steps are static and can't raise a discussion point and wait for an answer, the way the live session does.
+
+Ask about it once, up front (Phase 1), not per component and not only at the end. Two different tours serve two different moments, and conflating them into one file serves neither well:
+
+- **Live, per-component tours** exist so the reviewer can look at the actual code *before* weighing in, not to log what happened afterward — that's `review-notes.md` and the summary table's job. Give each component its own single-step `.tour` file, written as soon as the component is presented (Role, Risk, Look for, and the discussion question, if one is raised — never the outcome, which isn't known yet). A one-step tour is unambiguous to open: no guessing at a step index, no verified public mechanism to deep-link into a specific step of a larger tour anyway, so don't invent one. Link to it right after "Look for," before the discussion point, using the runtime's own file-open URI (e.g. `vscode://file/{path}`).
+- **The whole-PR tour** is for browsing the finished review afterward — a teammate clicking Next through every component in order is the one thing a multi-step tour is actually good for, so it stays one file covering the whole PR, and unlike the live per-component ones, it's built once outcomes are known and can include them. Phase 6 assembles it regardless of whether live tours ran, since that's the same consent already given, not a new ask; a reviewer who declined the up-front question can still get it there as a one-shot fallback.
+
+A reviewer who pauses partway through a large PR still has every per-component tour presented so far, even without the consolidated one yet.
+
+Never ask on a runtime that isn't VS Code, and never write anything — the initial file or a single step — without that explicit go-ahead. The same consent pattern as posting a PR comment or applying a directed edit.
 
 ## Don't re-litigate resolved ground
 

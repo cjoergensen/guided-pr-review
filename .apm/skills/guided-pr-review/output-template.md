@@ -6,6 +6,12 @@ The output shape below is fixed — every review, on every PR, on every runtime,
 
 **A newline alone does not start a new line in rendered Markdown.** Two adjacent lines with no blank line between them collapse into one paragraph and get joined with a space — a "Branch:" line immediately followed by a "Stated intent:" line renders as one squished-together sentence, not two scannable fields. Wherever this template shows tightly-grouped label lines stacked directly on top of each other (the kickoff's header fields, `Role`/`Risk`, `Discussion`/`Severity`), end each line except the last with a backslash (`\`) — Markdown's explicit hard line break — so they render as separate lines without the extra vertical gap a full paragraph break would add. Elsewhere, where a little extra vertical space is fine, just use a blank line instead.
 
+## Pre-kickoff prompt (only on VS Code, before the kickoff block)
+
+```
+[If the runtime is VS Code]: This looks like a VS Code session — build a live `.tour` file as we go, so you can follow along in the editor? (yes/no)
+```
+
 ## Kickoff block
 
 ````
@@ -56,6 +62,8 @@ Full form — used whenever there's a discussion point, a directed edit, or the 
 - [specific thing to check, line-level where possible]
 - [specific thing to check]
 
+[If a live tour is running]: 🧭 [Open this component's tour in VS Code]([file-open URI for this component's own single-step .tour file]) — see the actual code before weighing in below
+
 **Discussion:** [only if something warrants a decision — otherwise: "No concerns here — moving on."]\
 [If a discussion point is raised]: **Severity:** 🔴 Blocking | 🟡 Significant | ⚪ Minor
 
@@ -65,7 +73,7 @@ Full form — used whenever there's a discussion point, a directed edit, or the 
 Collapsed form — used only for a clean, low-risk component (pure refactor, config, internal helper):
 
 ```
-**[i]/[n]: [Name]** — no concerns _([one-line reason])_
+**[i]/[n]: [Name]** — no concerns _([one-line reason])_ [If a live tour is running]: · [🧭 view code]([file-open URI for this component's own single-step .tour file])
 ```
 
 ## Re-review block (used instead of the kickoff block when resuming after changes)
@@ -96,7 +104,9 @@ The table above is the exact preview of what would post to the PR (plus a "Revie
 
 Who conducted this review (name or handle)? And: post as-is, add details first, or skip posting?
 
-[If the runtime is VS Code]: Also export this walkthrough as a `.tour` file for browsing in VS Code? (yes/no)
+[If live per-component tours were built]: All [n] component tours are now also assembled into one whole-PR tour at [file-open URI for the whole-PR .tour file], ready to browse in order.
+
+[If the runtime is VS Code and no live tour was started]: Also export this walkthrough as a whole-PR `.tour` file for browsing in VS Code? (yes/no)
 ```
 
 ## Rules for filling the template
@@ -117,4 +127,7 @@ Who conducted this review (name or handle)? And: post as-is, add details first, 
 - The collapsed per-component form is only for a clean, low-risk component. A clean high-risk component still gets the full block — see `principles.md`, "Collapse the clean ones, but not the risky ones."
 - A re-reviewed discussion point always carries its original severity forward, marker included — a still-open blocking item and a still-open minor one must not read the same.
 - A "Change requested" row's Notes must say why it wasn't applied inline — no edit tool on this runtime, or the reviewer chose to leave it to the author — so a later reader knows whether the fix still needs to happen.
-- The `.tour` export offer only appears when the runtime is VS Code — never on other runtimes — and it's a separate yes/no from the PR-posting choice; saying yes to one doesn't imply the other (see `principles.md`, "Offer a .tour export where it fits, never assume it").
+- The `.tour` question is asked once, up front, before the kickoff block — never on other runtimes, and never repeated per component. If the reviewer says yes, every component gets its own single-step tour file, linked in its own output as it's written; the closing block reports the assembled whole-PR tour instead of asking again.
+- A live component's tour file is single-step, written and linked right after "Look for," before "Discussion" — its purpose is letting the reviewer see the actual code before forming a view, not recording what happened afterward. Its description never includes the outcome (Applied, or how a discussion resolved) — that content doesn't exist yet at write time, and duplicating it later would just be a second, driftable copy of what `review-notes.md` and the summary table already own.
+- A tour-file link always uses the runtime's generic file-open URI (e.g. `vscode://file/{path}`) — it opens the `.tour` file for CodeTour to prompt starting it. A live component's tour is exactly one step, so opening it is unambiguous by construction; never invent a step-jump URI parameter for the multi-step whole-PR tour, since there's no verified mechanism for that.
+- The Phase-6 whole-PR tour always gets assembled if live per-component tours were built — no new ask, since the up-front yes already covers it — and separately, the one-shot fallback export only appears when no live tour was started and the runtime is VS Code; it's a separate yes/no from the PR-posting choice (see `principles.md`, "Offer a .tour export where it fits, never assume it"). Both the assembled and fallback whole-PR tours are built after everything is resolved, so unlike the live per-component files, their step descriptions can and should include the outcome.
