@@ -1,0 +1,15 @@
+name: guided-pr-review
+version: 0.1.0
+description: A guided, component-by-component peer review process for AI coding assistants.
+author: Christian Grønbæk Jørgensen
+license: MIT
+
+# Restrictive: only targets we've actually built and validated get this
+# package's primitives. Extend as the roadmap in README.md progresses
+# (Claude Code, then Cursor).
+targets:
+  - copilot
+
+dependencies:
+  apm: []
+  mcp: []

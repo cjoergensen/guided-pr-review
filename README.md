@@ -15,48 +15,49 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 - **Asks, rather than dictates** — surfaces its read on a design choice and a specific question, then waits. Pushback changes its assessment; it doesn't argue past you.
 - **Captures the decision and the reasoning**, not just a verdict, so "why we built it this way" survives past the conversation.
 - **Resumes from where it left off** — after you push a fix, it re-checks only what changed and carries forward everything already resolved, rather than restarting the review.
-- **Same output shape every time** — a fixed template (see [`core/output-template.md`](core/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
+- **Same output shape every time** — a fixed template (see [`output-template.md`](.apm/skills/guided-pr-review/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
 
 ## Status
 
-Early work in progress. Core process is designed; the Copilot integration is the first one being built out.
+Early work in progress. Core process is designed and packaged as an [APM](https://microsoft.github.io/apm/) skill; the Copilot deploy is the first target being validated.
 
 ## Repository structure
 
 ```
-core/                       # platform-agnostic process definition — the source of truth
-├── process.md              # the phases: input resolution, overview, component
-│                            #   walkthrough, feedback capture, resumable re-review
-├── output-template.md      # the fixed output skeleton
-└── principles.md           # behavioral rules (propose don't dictate, ground in
-                             #   artifacts, bias toward fewer/sharper points)
+apm.yml                              # package manifest — name, version, targets, deps
+.apm/
+├── skills/
+│   └── guided-pr-review/
+│       ├── SKILL.md                 # entry point every APM target discovers
+│       ├── process.md               # the phases: input resolution, overview,
+│       │                            #   component walkthrough, feedback capture,
+│       │                            #   resumable re-review
+│       ├── output-template.md       # the fixed output skeleton
+│       └── principles.md            # behavioral rules (propose don't dictate,
+│                                     #   ground in artifacts, directed edits only)
+└── prompts/
+    └── review-pr.prompt.md          # Copilot-native `/review-pr` slash command
 
-code-assistants/            # thin adapters — one per AI coding tool
-└── copilot/                # GitHub Copilot chat mode + prompt file
-    ├── .github/chatmodes/review-facilitator.chatmode.md
-    ├── .github/prompts/review-pr.prompt.md
-    └── README.md
-
-examples/                   # worked example sessions, for reference
+examples/                            # worked example sessions, for reference
 └── rate-limiter-session.md
-
-scripts/
-└── sync.sh                 # copies a code-assistants/<tool>/ adapter into a
-                             #   consuming repo's .github/ (or equivalent) folder
 ```
 
-Adapters are intentionally thin: they register the process with a given tool's extension mechanism and point back at `core/` rather than duplicating it. Adding support for a new AI coding assistant means adding a new folder under `code-assistants/`, not editing the process itself.
+`SKILL.md`, `process.md`, `output-template.md`, and `principles.md` are the single source of truth — nothing duplicates them elsewhere. `apm install` hoists the `skills` and `prompts` primitives into whichever native location each target expects (`.agents/skills/guided-pr-review/` for Copilot and most other targets, `.claude/skills/` for Claude Code, `.github/prompts/` for Copilot's `/review-pr` command) — there's no hand-written per-tool adapter to keep in sync.
 
 ## Using it with GitHub Copilot
 
-See [`code-assistants/copilot/README.md`](code-assistants/copilot/README.md) for install steps. In short: copy `.github/chatmodes/review-facilitator.chatmode.md` and `.github/prompts/review-pr.prompt.md` into your project's `.github/` folder, then run `/review-pr` from a Copilot Chat session on the branch or PR you want reviewed.
+```bash
+apm install cjoergensen/guided-pr-review --target copilot
+apm compile
+```
+
+Then run `/review-pr` from a Copilot Chat session on the branch or PR you want reviewed, or just ask Copilot to review the PR — it can also discover the `guided-pr-review` skill directly.
 
 ## Roadmap
 
-- [ ] Finish and validate the Copilot adapter
-- [ ] Claude Code adapter
-- [ ] Cursor adapter
-- [ ] `scripts/sync.sh` for pulling an adapter into a consuming repo
+- [ ] Validate the Copilot skill + prompt deploy end-to-end
+- [ ] Add `claude` to `targets:` in `apm.yml` once verified on Claude Code
+- [ ] Add `cursor` to `targets:` in `apm.yml` once verified on Cursor
 
 ## License
 
