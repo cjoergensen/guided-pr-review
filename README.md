@@ -54,6 +54,25 @@ Most of the design choices above trace back to a specific finding, not a hunch. 
 - [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, the "add details" branch of the closing post-to-PR flow, and the Phase-6 fallback `.tour` export ([`checkout-pipeline.tour`](examples/checkout-pipeline.tour) is the actual generated file).
 - [`examples/live-tour-session.md`](examples/live-tour-session.md) — a small, two-component PR where the reviewer opts into live tours up front instead. Each component gets its own single-step `.tour` file the moment it's presented ([`live-tour-session-1-productcachedecorator.tour`](examples/live-tour-session-1-productcachedecorator.tour), [`live-tour-session-2-cacheinvalidationhandler.tour`](examples/live-tour-session-2-cacheinvalidationhandler.tour)), then both get assembled into one whole-PR tour at the end ([`live-tour-session.tour`](examples/live-tour-session.tour)) — two tours doing two different jobs.
 
+## A note on CodeTour
+
+[CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) is a VS Code extension for building interactive, file-and-line-anchored walkthroughs of a codebase. A `.tour` file is plain JSON — a title plus an ordered list of steps, each pointing at a file, a line, and a Markdown description — and the extension turns that into a Next/Previous panel that jumps your editor to each step in turn, with the real, syntax-highlighted code alongside the description.
+
+Two things worth knowing about how this project uses it:
+
+- **Two different tours, on purpose, not one shared file.** Each component gets its own single-step tour written the moment it's presented during a live walkthrough — opened with a plain `vscode://file/` link, so there's nothing ambiguous about which step you land on. A separate whole-PR tour gets assembled afterward (or built in one shot as a fallback) for browsing the finished review sequentially. See [`principles.md`](.apm/skills/guided-pr-review/principles.md), "Offer a .tour export where it fits, never assume it," for the reasoning.
+- **This integration hasn't been runtime-verified yet.** Everything else here that touches an external tool — `apm install`, posting to a GitHub PR — has been tested against the real thing. The CodeTour side is spec-and-example only so far; see the Roadmap below. In particular, the design deliberately avoids any step-jump URI beyond plain file-opening, because there's no publicly verified mechanism for that — if you know of one, that'd resolve the one open question here.
+
+### Using it in a session
+
+1. Install the [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) extension in VS Code — the skill produces `.tour` files either way, but you need this to actually browse them.
+2. Start `/review-pr` as usual (see below) from inside VS Code — Copilot Chat or Claude Code's VS Code extension both count. Nothing extra to type; the skill detects VS Code on its own.
+3. Before the kickoff block, you'll be asked: `This looks like a VS Code session — build a live .tour file as we go?` Answer yes or no. If you say no here but change your mind, you'll get one more chance to export a whole-PR tour at the very end instead.
+4. If you said yes, each component's output carries a 🧭 link once it's presented — click it to open that component's own tour file in VS Code; CodeTour will prompt you to start it, showing that one piece of code full-screen alongside its description.
+5. Once the walkthrough finishes, the summary block links to a consolidated whole-PR tour (in `.tours/` in your repo) — open that one when you want to click Next through every component in order, rather than reopening each link from the transcript.
+
+If you're running outside VS Code (a browser-based Copilot session, a plain terminal), none of this appears — the ordinary file links and chat transcript are all you get, which is the same review either way, just without the editor-side walkthrough.
+
 ## Status
 
 Early work in progress. Core process is designed and packaged as an [APM](https://microsoft.github.io/apm/) skill; Copilot and Claude Code deploys are validated, Cursor is next.
@@ -87,6 +106,16 @@ examples/                            # worked example sessions, for reference
 ```
 
 `SKILL.md`, `process.md`, `output-template.md`, and `principles.md` are the single source of truth — nothing duplicates them elsewhere. `apm install` hoists the `skills` and `prompts` primitives into whichever native location each target expects (`.agents/skills/guided-pr-review/` for Copilot and most other targets, `.claude/skills/` for Claude Code, `.github/prompts/` for Copilot's `/review-pr` command) — there's no hand-written per-tool adapter to keep in sync.
+
+## Using the skill
+
+Three steps, regardless of which assistant you're using:
+
+1. **Install it once, per repo.** See the runtime-specific commands below.
+2. **Invoke it.** Run `/review-pr` from a chat session on the branch or PR you want reviewed, or just ask in plain language — "review this PR," "review this branch." No arguments needed; it figures out the branch, base, and diff itself.
+3. **Walk through it.** This is a conversation, not a one-shot report. It gives you a structural overview and an ordered component list first, then presents one component at a time — what it does, what to look for, and (only when something's actually worth deciding) a specific question. You respond to each one: approve it, answer the question, push back, or direct a specific fix ("drop the `_` prefix," "call the service directly instead of going through the REST endpoint") — it waits for you before moving on. At the end, it shows a summary table and asks whether to post it to the PR, and — only in VS Code — whether to build or export a `.tour` file (see "A note on CodeTour" above).
+
+See [`examples/`](examples/) for what that conversation actually looks like turn by turn, and [`process.md`](.apm/skills/guided-pr-review/process.md) for the full phase-by-phase definition.
 
 ## Using it with GitHub Copilot
 
