@@ -95,6 +95,8 @@ Collapsed form — used only for a clean, low-risk component (pure refactor, con
 The table above is the exact preview of what would post to the PR (plus a "Reviewed by:" line).
 
 Who conducted this review (name or handle)? And: post as-is, add details first, or skip posting?
+
+[If the runtime is VS Code]: Also export this walkthrough as a `.tour` file for browsing in VS Code? (yes/no)
 ```
 
 ## Rules for filling the template
@@ -115,3 +117,4 @@ Who conducted this review (name or handle)? And: post as-is, add details first, 
 - The collapsed per-component form is only for a clean, low-risk component. A clean high-risk component still gets the full block — see `principles.md`, "Collapse the clean ones, but not the risky ones."
 - A re-reviewed discussion point always carries its original severity forward, marker included — a still-open blocking item and a still-open minor one must not read the same.
 - A "Change requested" row's Notes must say why it wasn't applied inline — no edit tool on this runtime, or the reviewer chose to leave it to the author — so a later reader knows whether the fix still needs to happen.
+- The `.tour` export offer only appears when the runtime is VS Code — never on other runtimes — and it's a separate yes/no from the PR-posting choice; saying yes to one doesn't imply the other (see `principles.md`, "Offer a .tour export where it fits, never assume it").

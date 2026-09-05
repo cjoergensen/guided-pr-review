@@ -20,6 +20,7 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 - **Captures the decision and the reasoning**, not just a verdict, so "why we built it this way" survives past the conversation.
 - **Resumes from where it left off** — after you push a fix, it re-checks only what changed and carries forward everything already resolved, rather than restarting the review.
 - **Same output shape every time** — a fixed template (see [`output-template.md`](.apm/skills/guided-pr-review/output-template.md)) so review output is predictable and scannable regardless of what's in the diff.
+- **Can export the walkthrough as a [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) `.tour` file** on VS Code — one step per component, so a teammate who wasn't in the session can click through the real code, not just read a transcript. Always opt-in, always a separate choice from posting to the PR.
 
 ## Grounded in research
 
@@ -50,7 +51,7 @@ Most of the design choices above trace back to a specific finding, not a hunch. 
 
 - [`examples/refactor-session.md`](examples/refactor-session.md) — a one-component pure refactor (a rename plus an extracted helper, no behavior change) with nothing to flag. Shows the process doesn't manufacture a discussion point just to have something to say.
 - [`examples/rate-limiter-session.md`](examples/rate-limiter-session.md) — a small, two-component PR: a token-bucket rate limiter plus the middleware wiring it into request handling. One discussion point resolves with no code change; the other surfaces a real concurrency bug and gets fixed inline via a directed edit.
-- [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, plus the "add details" branch of the closing post-to-PR flow.
+- [`examples/checkout-pipeline-session.md`](examples/checkout-pipeline-session.md) — a larger, six-component checkout pipeline with a genuinely branching flow, where the optional Mermaid diagram earns its place. Covers every decision state and severity tier in one summary table, the "add details" branch of the closing post-to-PR flow, and a `.tour` export ([`checkout-pipeline.tour`](examples/checkout-pipeline.tour) is the actual generated file).
 
 ## Status
 
@@ -76,7 +77,8 @@ apm.yml                              # package manifest — name, version, targe
 examples/                            # worked example sessions, for reference
 ├── refactor-session.md              # simplest case: nothing to flag
 ├── rate-limiter-session.md          # small case: one bug, one non-issue
-└── checkout-pipeline-session.md     # larger case: diagram, full state coverage
+├── checkout-pipeline-session.md     # larger case: diagram, full state coverage
+└── checkout-pipeline.tour           # the .tour file that session generates
 ```
 
 `SKILL.md`, `process.md`, `output-template.md`, and `principles.md` are the single source of truth — nothing duplicates them elsewhere. `apm install` hoists the `skills` and `prompts` primitives into whichever native location each target expects (`.agents/skills/guided-pr-review/` for Copilot and most other targets, `.claude/skills/` for Claude Code, `.github/prompts/` for Copilot's `/review-pr` command) — there's no hand-written per-tool adapter to keep in sync.
@@ -103,7 +105,8 @@ The `prompts` primitive has no Claude equivalent, so `apm install` converts it a
 - [x] Validate the Copilot skill + prompt deploy end-to-end
 - [x] Validate the Claude Code skill + command deploy end-to-end
 - [ ] Add `cursor` to `targets:` in `apm.yml` once verified on Cursor
-- [ ] Optional [`.tour`](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) export at Phase 6, alongside post-as-is/add-details/skip — one step per component (file, line, description built from Role/Risk/Look for/Discussion), gated on VS Code as the runtime and only on explicit request, same as posting a PR comment
+- [x] Optional `.tour` export at Phase 6 — see `process.md` Phase 6, `principles.md` "Offer a .tour export where it fits, never assume it", and [`checkout-pipeline.tour`](examples/checkout-pipeline.tour) for the worked example
+- [ ] Validate the `.tour` export against the real CodeTour extension in VS Code — so far it's spec-and-example only, not runtime-verified the way the Copilot/Claude deploys were with the real `apm` CLI
 
 ## License
 

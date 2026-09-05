@@ -1,0 +1,42 @@
+{
+  "title": "Add checkout pipeline (validate, reserve, price, persist, publish)",
+  "description": "Generated from a guided-pr-review session — see checkout-pipeline-session.md for the full transcript. One step per component, in call/dependency order.",
+  "steps": [
+    {
+      "title": "1/6: CheckoutController",
+      "file": "src/Api/Controllers/CheckoutController.cs",
+      "line": 18,
+      "description": "**Role:** HTTP entry point; deserializes the cart and kicks off the pipeline.\n**Risk:** new public API surface\n\n**Discussion:** should this endpoint require an idempotency key to prevent a duplicate checkout on client retry? (🟡 Significant)\n\n**Outcome:** Open discussion — tracked separately as IDEMPOTENCY-142, out of scope for this PR."
+    },
+    {
+      "title": "2/6: OrderValidator",
+      "file": "src/Orders/OrderValidator.cs",
+      "line": 12,
+      "description": "No concerns — empty-cart and quantity checks confirmed. (Internal helper, low risk.)"
+    },
+    {
+      "title": "3/6: InventoryReservationService",
+      "file": "src/Inventory/InventoryReservationService.cs",
+      "line": 30,
+      "description": "**Role:** Reserves stock for each line item; the branch point that decides reserved vs. out-of-stock.\n**Risk:** concurrency-sensitive, shared state\n\n**Discussion:** under concurrent checkouts for the same SKU, can two requests both read stock before either decrements it, over-reserving? (🔴 Blocking)\n\n**Outcome:** Applied — replaced the read-then-write with a single conditional UPDATE statement, branching on rows-affected. Commit `c4d5e6f`."
+    },
+    {
+      "title": "4/6: PricingService",
+      "file": "src/Pricing/PricingService.cs",
+      "line": 40,
+      "description": "**Role:** Computes the order total from reserved line items, applying discounts before tax.\n**Risk:** touches money\n\n**Discussion:** should the rounding mode be explicit, given this is a financial total? (⚪ Minor)\n\n**Outcome:** Applied — changed to `Math.Round(total, 2, MidpointRounding.AwayFromZero)`. Commit `c4d5e6f`."
+    },
+    {
+      "title": "5/6: OrderRepository",
+      "file": "src/Data/OrderRepository.cs",
+      "line": 25,
+      "description": "**Role:** Persists the order and its inventory reservation together.\n**Risk:** data integrity\n\nNo concerns — order and reservation writes confirmed wrapped in one `TransactionScope`. Kept as a full step, not collapsed, because this component is high-risk even though it's clean (see principles.md, \"Collapse the clean ones, but not the risky ones\")."
+    },
+    {
+      "title": "6/6: OrderPlacedEventPublisher",
+      "file": "src/Events/OrderPlacedEventPublisher.cs",
+      "line": 16,
+      "description": "No concerns — publish failure doesn't roll back the already-committed order, by design. (Internal helper, low risk.)"
+    }
+  ]
+}

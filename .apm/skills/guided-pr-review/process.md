@@ -81,3 +81,9 @@ End the session by showing this table as the exact preview of what would be post
 - **Skip**: don't post anything.
 
 Never post automatically; posting always requires that explicit choice, the same as a directed edit.
+
+**If the runtime is VS Code** (or a fork), separately ask whether to also export the walkthrough as a [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) `.tour` file (see `principles.md`, "Offer a .tour export where it fits, never assume it") — this is a distinct yes/no from the PR-posting choice above; saying yes to one doesn't imply the other, and don't ask at all on a runtime that isn't VS Code. If the reviewer says yes:
+
+1. Write one step per component from the Phase 3 list, in the same order, each pointing at that component's file and line.
+2. Use the same collapse logic as Phase 4: a clean, low-risk component gets a one-line step description; a clean high-risk component, or one with a discussion point, gets a fuller description built from its Role, Risk, Look for items, and — if raised — the Discussion, its severity, and how it was resolved.
+3. Title the tour from the PR title, and write it to `.tours/<slug>.tour` in the repo (CodeTour's own convention), only after the reviewer's explicit go-ahead — never silently.

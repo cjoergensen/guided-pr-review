@@ -148,9 +148,11 @@ The table above is the exact preview of what would post to the PR (plus a "Revie
 
 Who conducted this review (name or handle)? And: post as-is, add details first, or skip posting?
 
+Also export this walkthrough as a `.tour` file for browsing in VS Code? (yes/no)
+
 ---
 
-> 💬 **Reviewer:** jsmith — add details: "Idempotency (IDEMPOTENCY-142) is tracked separately and will land before this ships to prod."
+> 💬 **Reviewer:** jsmith — add details: "Idempotency (IDEMPOTENCY-142) is tracked separately and will land before this ships to prod." And yes, export the tour too.
 
 ---
 
@@ -175,6 +177,12 @@ Who conducted this review (name or handle)? And: post as-is, add details first, 
 
 ---
 
+**Tour exported** to `.tours/checkout-pipeline.tour` — see [`checkout-pipeline.tour`](checkout-pipeline.tour) for the actual generated file. Open it with the [CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) extension to click through the same six components in VS Code, each pointing at its real file and line.
+
+---
+
 This session shows the fuller shape of the template at once: a Mermaid diagram earning its place on a genuinely branching flow, risk tags spanning the categories `principles.md` names by name (public API, concurrency, money, data integrity), all four decision states in one summary table (approved, applied, applied again, and open discussion), severities running the full range with their markers (🔴 blocking, 🟡 significant, ⚪ minor — scannable in the table without reading every row), and the "add details" branch of the closing flow — the reviewer's own words, appended verbatim, not rephrased into the discussion above.
+
+It also shows the `.tour` export in practice: a separate yes/no from the PR-posting choice, offered only because the runtime here is VS Code. Notice the generated file uses the same collapse logic as the chat output — `OrderValidator` and `OrderPlacedEventPublisher` get one-line step descriptions since they're clean and low-risk, while `OrderRepository` keeps a fuller description despite being clean, because data integrity is high-risk (see `principles.md`, "Collapse the clean ones, but not the risky ones" and "Offer a .tour export where it fits, never assume it").
 
 It also shows both halves of "Collapse the clean ones, but not the risky ones" side by side: `OrderValidator` and `OrderPlacedEventPublisher` are both clean and both low-risk, so they collapsed to one line each. `OrderRepository` is also clean, but it's tagged data integrity — high-risk — so it kept the full block, Look-for bullets included, so the reviewer can see what was actually checked rather than take "no concerns" on faith.
