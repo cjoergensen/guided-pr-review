@@ -6,9 +6,10 @@ license: MIT
 
 # Restrictive: only targets we've actually built and validated get this
 # package's primitives. Extend as the roadmap in README.md progresses
-# (Claude Code, then Cursor).
+# (Cursor next).
 targets:
   - copilot
+  - claude
 
 dependencies:
   apm: []

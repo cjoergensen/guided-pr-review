@@ -19,7 +19,7 @@ File-by-file review of AI-generated (or any) implementations is exhausting and l
 
 ## Status
 
-Early work in progress. Core process is designed and packaged as an [APM](https://microsoft.github.io/apm/) skill; the Copilot deploy is the first target being validated.
+Early work in progress. Core process is designed and packaged as an [APM](https://microsoft.github.io/apm/) skill; Copilot and Claude Code deploys are validated, Cursor is next.
 
 ## Repository structure
 
@@ -53,10 +53,18 @@ apm compile
 
 Then run `/review-pr` from a Copilot Chat session on the branch or PR you want reviewed, or just ask Copilot to review the PR — it can also discover the `guided-pr-review` skill directly.
 
+## Using it with Claude Code
+
+```bash
+apm install cjoergensen/guided-pr-review --target claude
+```
+
+The `prompts` primitive has no Claude equivalent, so `apm install` converts it automatically into a `/review-pr` command (`.claude/commands/review-pr.md`), alongside the skill at `.claude/skills/guided-pr-review/`. Run `/review-pr` from Claude Code, or just ask it to review the PR.
+
 ## Roadmap
 
-- [ ] Validate the Copilot skill + prompt deploy end-to-end
-- [ ] Add `claude` to `targets:` in `apm.yml` once verified on Claude Code
+- [x] Validate the Copilot skill + prompt deploy end-to-end
+- [x] Validate the Claude Code skill + command deploy end-to-end
 - [ ] Add `cursor` to `targets:` in `apm.yml` once verified on Cursor
 
 ## License
