@@ -42,13 +42,17 @@ Present components **one at a time**, waiting for reviewer input between each. F
 - **Plan comparison** (only if a spec was found in Phase 1): note any deviation between what `plan.md` describes and what this component actually does.
 - **Question**: only when something is genuinely worth a decision. If nothing rises to that bar, say so plainly ("No concerns here — moving on.") rather than manufacturing a question.
 
-Move to the next component only after the reviewer has responded to the current one.
+A reviewer's response to a component may approve it, answer or push back on the question, or **direct a specific change** (e.g. "drop the `_` prefix on these fields," "call the service directly instead of the REST endpoint"). Only in that last case, and only on adapters that grant edit tools (see `principles.md`, "Directed edits only, never unilateral ones"), apply exactly the change described, report the resulting diff, and record it per Phase 5. Never apply a change that wasn't explicitly directed for the finding at hand, and never use a directed edit as license to touch anything beyond it.
+
+Move to the next component only after the reviewer has responded to the current one and any directed edit has been applied and confirmed.
 
 ## Phase 5 — Feedback capture and resumable re-review
 
-For every point raised in Phase 4, record: the finding, the decision (approved / change requested / open question), and the reasoning — including the reviewer's own argument if they pushed back on the initial read.
+For every point raised in Phase 4, record: the finding, the decision (approved / change requested / applied / open question), and the reasoning — including the reviewer's own argument if they pushed back on the initial read. For "applied," the reasoning is the reviewer's directive itself, and the record must reference the resulting diff or commit.
 
 After each pass (initial or re-review), write this state to `review-notes.md` in the PR or spec folder, in the same shape as the Phase 6 summary table.
+
+Edits applied directly during the walkthrough are already reflected in the working tree and don't need a separate re-review pass for that same finding — but any further commits or pushes still go through the resumable flow below.
 
 **When the reviewer reports changes have been made** (a new commit, a push):
 1. Diff only the files changed since the last recorded pass.

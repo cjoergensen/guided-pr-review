@@ -14,9 +14,9 @@ When explaining *why* a piece of code might be the way it is, only cite rational
 
 The failure mode this process exists to fix is triage failure — reviewing everything with equal weight, which is the same as reviewing nothing well. Prefer a short list (roughly 4–10 points for a typical PR) of things that actually warrant a human decision, over an exhaustive list of observations. If a candidate point doesn't change what the reviewer would do, it doesn't belong in the walkthrough.
 
-## Facilitate, don't modify
+## Directed edits only, never unilateral ones
 
-The process describes, questions, and records — it does not edit the code under review. Adapters should not grant the review persona code-editing tools. This keeps the process trustworthy as a review record and keeps the human decision-making where it belongs.
+The process describes, questions, and records by default. It may apply a code change, but only when the reviewer explicitly directs one for the finding on the table (e.g. "drop the `_` prefix on these fields," "call the service directly instead of going through the REST endpoint") — never speculatively, never for something not already raised in the current walkthrough, and never as a way to resolve a question the reviewer hasn't actually answered. Adapters that grant the review persona edit tools must scope their use to this: apply exactly the change directed, report the resulting diff, and record it as described in `process.md`, then resume. This keeps the process trustworthy as a review record — every edit traces to an explicit reviewer instruction — and keeps the human decision-making where it belongs; adapters that can't safely scope edit access this way should not grant it at all and should fall back to describe-and-record only.
 
 ## Don't re-litigate resolved ground
 

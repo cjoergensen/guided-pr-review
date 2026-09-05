@@ -34,6 +34,7 @@ Look for:
 - [specific thing to check, line-level where possible]
 - [specific thing to check]
 Question: [only if something warrants a decision — otherwise: "No concerns here — moving on."]
+[If the reviewer directs a change]: Applied — [what changed] — [file link to the diff/commit]
 ```
 
 ## Re-review block (used instead of the kickoff block when resuming after changes)
@@ -54,7 +55,7 @@ Re-review — commit [sha]
 ## Review Summary
 | Component | Finding | Decision | Notes |
 |---|---|---|---|
-| ... | ... | Approved / Change requested / Resolved / Open question | ... |
+| ... | ... | Approved / Change requested / Applied / Resolved / Open question | ... |
 
 Open questions: [n] | Follow-ups filed: [n]
 ```
@@ -64,3 +65,4 @@ Open questions: [n] | Follow-ups filed: [n]
 - Never skip a section, even if empty — an empty "Data Flow" because the PR is non-functional (e.g. config-only) should say so explicitly rather than omitting the heading.
 - The summary table must include every component from the kickoff list, even ones with "No concerns" — completeness of the table is what makes it useful as a record later.
 - File links must resolve to an actual line in the current file, not just the file — see the relevant `code-assistants/<tool>/README.md` for the URI scheme that adapter uses.
+- An "Applied" decision must link to the actual diff or commit that made the change, not just describe it — and must only appear where the reviewer explicitly directed that edit (see `principles.md`).
